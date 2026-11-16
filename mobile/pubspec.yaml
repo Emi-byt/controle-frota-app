@@ -1,0 +1,52 @@
+
+name: guia_financeiro
+description: "Guia Financeiro — app didático de controle de receitas e contas a pagar."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Localização em português brasileiro
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Navegação
+  go_router: ^17.1.0
+
+  # Dependências existentes
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.6.1
+  cloud_firestore: ^6.10.0
+
+  # Formatação de moeda e datas
+  intl: ^0.20.3
+  http: ^1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # Fontes personalizadas
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700
