@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../services/auth_service_laravel.dart';
-import '../../services/frota_api.dart';
+import '../../repositories/frota_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final FrotaRepository repository = const LaravelFrotaRepository();
   bool loading = true;
   String? error;
 
@@ -169,9 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final result = await Future.wait([
-        FrotaApi.list('vehicles'),
-        FrotaApi.list('drivers'),
-        FrotaApi.list('fuelings'),
+        repository.listar('vehicles'),
+        repository.listar('drivers'),
+        repository.listar('fuelings'),
       ]);
 
       if (!mounted) return;

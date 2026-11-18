@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/frota_api.dart';
+
+import '../../repositories/frota_repository.dart';
 
 class DateInputFormatter extends TextInputFormatter {
   @override
@@ -12,8 +13,11 @@ class DateInputFormatter extends TextInputFormatter {
     final limited = digits.length > 8 ? digits.substring(0, 8) : digits;
 
     final buffer = StringBuffer();
+
     for (int i = 0; i < limited.length; i++) {
-      if (i == 2 || i == 4) buffer.write('/');
+      if (i == 2 || i == 4) {
+        buffer.write('/');
+      }
       buffer.write(limited[i]);
     }
 
@@ -37,6 +41,8 @@ class FuelingFormScreen extends StatefulWidget {
 
 class _FuelingFormScreenState extends State<FuelingFormScreen> {
   final formKey = GlobalKey<FormState>();
+
+  final FrotaRepository repository = const LaravelFrotaRepository();
 
   final date = TextEditingController();
   final price = TextEditingController();
@@ -97,14 +103,16 @@ class _FuelingFormScreenState extends State<FuelingFormScreen> {
   }
 
   void refreshTotal() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> loadOptions() async {
     try {
       final results = await Future.wait([
-        FrotaApi.list('vehicles'),
-        FrotaApi.list('drivers'),
+        repository.listar('vehicles'),
+        repository.listar('drivers'),
       ]);
 
       if (!mounted) return;
@@ -180,13 +188,15 @@ class _FuelingFormScreenState extends State<FuelingFormScreen> {
         'posto': station.text.trim().isEmpty ? null : station.text.trim(),
       };
 
-      await FrotaApi.save(
+      await repository.salvar(
         'fuelings',
         data,
         id: (widget.existing?['id'] as num?)?.toInt(),
       );
 
-      if (mounted) Navigator.of(context).pop(true);
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -194,7 +204,9 @@ class _FuelingFormScreenState extends State<FuelingFormScreen> {
         ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
-      if (mounted) setState(() => saving = false);
+      if (mounted) {
+        setState(() => saving = false);
+      }
     }
   }
 
@@ -262,7 +274,8 @@ class _FuelingFormScreenState extends State<FuelingFormScreen> {
                             const SizedBox(height: 20),
 
                             DropdownButtonFormField<int>(
-                              value: vehicles.any((v) => v['id'] == vehicleId)
+                              initialValue:
+                                  vehicles.any((v) => v['id'] == vehicleId)
                                   ? vehicleId
                                   : null,
                               isExpanded: true,
@@ -290,7 +303,8 @@ class _FuelingFormScreenState extends State<FuelingFormScreen> {
                             const SizedBox(height: 16),
 
                             DropdownButtonFormField<int>(
-                              value: drivers.any((v) => v['id'] == driverId)
+                              initialValue:
+                                  drivers.any((v) => v['id'] == driverId)
                                   ? driverId
                                   : null,
                               isExpanded: true,

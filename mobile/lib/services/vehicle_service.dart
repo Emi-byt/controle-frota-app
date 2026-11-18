@@ -1,60 +1,31 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
 import '../models/vehicle_model.dart';
+import '../repositories/frota_repository.dart';
 
 class VehicleService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/vehicles';
+  final FrotaRepository _repository;
 
+  VehicleService({FrotaRepository? repository})
+    : _repository = repository ?? const LaravelFrotaRepository();
+
+  // Consulta os veículos utilizando o Repository.
   Future<List<VehicleModel>> listar() async {
-    final response = await http
-        .get(Uri.parse(baseUrl), headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 15));
-
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao carregar veículos.');
-    }
-
-    final List<dynamic> dados = jsonDecode(response.body);
+    final dados = await _repository.listar('vehicles');
 
     return dados.map((item) => VehicleModel.fromJson(item)).toList();
   }
 
+  // Cadastra um novo veículo.
   Future<VehicleModel> cadastrar(VehicleModel vehicle) async {
-    final response = await http
-        .post(
-          Uri.parse(baseUrl),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode(vehicle.toJson()),
-        )
-        .timeout(const Duration(seconds: 15));
+    await _repository.salvar('vehicles', vehicle.toJson());
 
-    if (response.statusCode == 201) {
-      return VehicleModel.fromJson(jsonDecode(response.body));
-    }
-
-    if (response.statusCode == 422) {
-      throw Exception('Dados inválidos ou placa já cadastrada.');
-    }
-
-    throw Exception('Erro ao cadastrar veículo: ${response.statusCode}');
+    // O Repository atual não retorna o registro criado.
+    // Retornamos o modelo enviado para manter a assinatura
+    // utilizada pelas outras partes do aplicativo.
+    return vehicle;
   }
 
+  // Exclui um veículo pelo identificador.
   Future<void> excluir(int id) async {
-    final response = await http
-        .delete(
-          Uri.parse('$baseUrl/$id'),
-          headers: {'Accept': 'application/json'},
-        )
-        .timeout(const Duration(seconds: 15));
-
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Não foi possível excluir o veículo.');
-    }
+    await _repository.excluir('vehicles', id);
   }
 }
