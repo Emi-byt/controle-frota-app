@@ -1,4 +1,3 @@
-
 # Controle de Frota
 
 Projeto acadêmico de Desenvolvimento Mobile — Engenharia de Software, UniGuairacá.
@@ -70,7 +69,7 @@ Em outro terminal, acesse a pasta `mobile`:
 ```bash
 cd mobile
 flutter pub get
-flutter run -d chrome
+flutter run -d edge
 ```
 
 O aplicativo será iniciado no navegador.
